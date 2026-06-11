@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Enemy : MonoBehaviour
 {
@@ -20,14 +21,16 @@ public class Enemy : MonoBehaviour
     private bool isDead = false;
     private CancellationTokenSource cts;
 
-    private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
+    [SerializeField] bool isLastEnemy = false;       
+    [SerializeField] GameObject nextEnemyPrefab;    
+    [SerializeField] Vector3 spawnOffset = new Vector3(0, 2f, 0);
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         cts = new CancellationTokenSource();
-
-        spriteRenderer = GetComponent<SpriteRenderer>();
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
@@ -77,13 +80,6 @@ public class Enemy : MonoBehaviour
         {
             rb.linearVelocityX = 0f;
         }
-    }
-
-    void OnDestroy()
-    {
-        
-        cts?.Cancel();
-        cts?.Dispose();
     }
 
    
@@ -174,17 +170,15 @@ public class Enemy : MonoBehaviour
         _ = FlashAndDestroy();
     }
 
-    
+
     private async UniTask FlashAndDestroy()
     {
         if (spriteRenderer != null)
         {
-            
             for (int i = 0; i < 4; i++)
             {
                 spriteRenderer.enabled = false;
                 await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
-
                 spriteRenderer.enabled = true;
                 await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
             }
@@ -194,7 +188,32 @@ public class Enemy : MonoBehaviour
             await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
         }
 
+        if (isLastEnemy)
+        {
+            
+            WinGame();
+        }
+        else if (nextEnemyPrefab != null)
+        {
+            
+            Vector3 spawnPosition = transform.position + spawnOffset;
+            Instantiate(nextEnemyPrefab, spawnPosition, Quaternion.identity);
+           
+        }
+
         
         Destroy(gameObject);
+    }
+
+   
+    private void WinGame()
+    {
+        SceneManager.LoadScene("Win");
+    }
+
+    void OnDestroy()
+    {
+        cts?.Cancel();
+        cts?.Dispose();
     }
 }

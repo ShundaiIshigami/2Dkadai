@@ -148,6 +148,7 @@ MonoBehaviour:
   speed: 5
   jumpSpeed: 10
   slashSpeed: 10
+  maxJumpCount: 3
   animator: {fileID: 8910225307358773707}
   localScale: {x: 0, y: 0, z: 0}
 --- !u!1 &8213111206666561917
@@ -299,7 +300,7 @@ GameObject:
   - component: {fileID: 3049914921680588153}
   m_Layer: 0
   m_Name: AttackArea
-  m_TagString: Slash
+  m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
